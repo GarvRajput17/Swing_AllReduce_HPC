@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Financial Novel Generator</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monogatari@latest/dist/engine/monogatari.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monogatari@latest/dist/engine/vendor.css">
+    <link rel="stylesheet" href="/web/main.css">
+    
+    <style>
+        body { 
+            font-family: Arial; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        select, button { 
+            padding: 8px; 
+        }
+        .loading { 
+            text-align: center; 
+            display: none; 
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="monogatari">
+        <visual-novel>
+            <loading-screen></loading-screen>
+            <main-screen>
+                <main-menu></main-menu>
+            </main-screen>
+            <game-screen>
+                <dialog-log></dialog-log>
+                <text-box></text-box>
+                <quick-menu></quick-menu>
+            </game-screen>
+            <gallery-screen></gallery-screen>
+            <credits-screen></credits-screen>
+            <load-screen></load-screen>
+            <save-screen></save-screen>
+            <settings-screen></settings-screen>
+            <help-screen></help-screen>
+        </visual-novel>
+    </div>
+
+    <h1>Financial Novel Generator</h1>
+    <div class="card">
+        <h2>Generate Your Financial Adventure</h2>
+        <div class="form-group">
+            <label for="concept">What financial concept do you want to learn?</label>
+            <select id="concept" class="form-control">
+                <option value="savings">Savings</option>
+                <option value="investing">Investing</option>
+                <option value="budgeting">Budgeting</option>
+                <option value="emergency funds">Emergency Funds</option>
+                <option value="credit scores">Credit Scores</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="difficulty">Difficulty Level:</label>
+            <select id="difficulty" class="form-control">
+                <option value="beginner">Beginner</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+        <button id="generate-btn" class="btn" style="font-size: 16px; width: 100%;">Generate Story</button>
+        <div class="loading" id="loading">
+            <p>Generating your financial adventure...</p>
+            <p>This may take a minute...</p>
+        </div>
+    </div>
+
+    <!-- Core JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/monogatari@latest/dist/engine/vendor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monogatari@latest/dist/engine/monogatari.js"></script>
+    
+    <!-- Initialize Monogatari -->
+    <script>
+        const monogatari = Monogatari.default;
+        monogatari.init('#monogatari');
+    </script>
+    
+    <!-- Custom Scripts -->
+    <script src="/web/options.js"></script>
+    <script src="/web/storage.js"></script>
+    <script src="/web/script.js"></script>
+    <script src="/web/main.js"></script>
+
+    <!-- Form Handler -->
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const concept = document.getElementById('concept').value;
+            const difficulty = document.getElementById('difficulty').value;
+            console.log('Generate button clicked!');
+            console.log('Concept:', concept);
+            console.log('Difficulty:', difficulty);
+
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ concept, difficulty })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('loading').style.display = 'none';
+                    localStorage.setItem('currentStoryId', data.storyId);
+                    localStorage.setItem('currentConcept', concept);
+                    window.location.href = '/novel';
+                } else {
+                    throw new Error(data.error || 'Failed to generate story');
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert(`Error: ${error.message}`);
+            }
+        });
+
+        console.log('Script loaded successfully!');
+    </script>
+</body>
+</html>

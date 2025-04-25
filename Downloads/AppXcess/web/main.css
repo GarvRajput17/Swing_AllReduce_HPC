@@ -1,0 +1,10 @@
+/* Main CSS file */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Customize text box */
+[data-component="text-box"] {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+}
